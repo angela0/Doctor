@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	mui.plusReady(function(){
+      		
+      		
+      		
+      		var login_btn = document.getElementById("login_btn");
+      		var reg_btn = document.getElementById("reg_btn");
+      		
+      		reg_btn.addEventListener('tap', function(){
+      			mui.openWindow({
+      				url: 'reg.html',
+      				id: 'reg'
+      			});
+      			//mui.back();
+      		})
+      		
+      		login_btn.addEventListener('tap', function(){
+      			var username = document.getElementById('username');
+      			var password = document.getElementById('password');
+      			
+      			if(username.value.length==0){
+      				plus.ui.toast('帐号不能为空');
+      				return;
+      			}
+				if(password.value.length==0){
+      				plus.ui.toast('密码不能为空');
+      				return;
+      			}
+				mui.ajax('http://115.28.74.83/pycrawl/user.php?f=login', {
+					data: {
+						username: username.value,
+						password: password.value
+					},
+					dataType: 'json',
+					type: 'POST',
+					timeout: 10000,
+					success: function(data){
+						if(data.result==1){
+							plus.ui.toast('登录成功');
+							plus.storage.setItem('username', username.value);
+							plus.storage.setItem('password', password.value);
+							
+							plus.webview.getWebviewById(plus.runtime.appid).reload();
+							mui.back();
+							
+						}else{
+							plus.ui.toast('登录失败');
+						}
+					},
+					error: function(){
+						plus.ui.toast('what?');
+					}
+				})
+      		})
+      	})
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">登录</h1>
+	</header>
+	<div class="mui-content">
+		<form class="mui-input-group">
+			<div class="mui-input-row">
+				<label>帐号</label>
+				<input type="text" class="mui-input-clear" placeholder="请输入帐号" id="username">
+			</div>
+			<div class="mui-input-row">
+				<label>密码</label>
+				<input type="password" class="mui-input-clear" placeholder="请输入密码" id="password">
+			</div>
+			
+		</form>
+		<div class="mui-content-padded" align="center">
+			<button type="button" class="mui-btn mui-btn-blue" id="login_btn">登录</button>
+			<button type="button" class="mui-btn mui-btn-green" id="reg_btn">注册</button>
+		</div>
+	</div>
+</body>
+</html>

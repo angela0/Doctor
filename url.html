@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	
+      	mui.plusReady(function(){
+			var selfpage = plus.webview.currentWebview();
+			var url = document.getElementById("url");
+			var name = document.getElementById("name");
+			var link =document.getElementById("link");
+			var status = document.getElementById("status");
+			var opor = document.getElementById("opor");
+			
+			url.innerHTML = selfpage.url;
+			name.innerHTML = selfpage.name;
+			if(selfpage.status==0){
+				status.innerHTML = '未审核，审核后双击右侧按钮确定添加';
+			}else{
+				status.innerHTML = '已审核，可删除';
+			}
+			
+			document.getElementById("up").addEventListener('click', function(){
+				dataid = selfpage.dataid;
+				
+				mui.ajax('http:///pycrawl/admin.php?op=up', {
+					data: {
+						'id': dataid
+					},
+					dataType: 'json',
+					type: 'POST',
+					timeout: 10000,
+					success: function(data){
+						plus.ui.toast(data.data);
+						plus.webview.getWebviewById('admin').reload();
+					},
+					error: function(){
+						plus.ui.toast('添加失败！！');
+					}
+				})
+			})
+			document.getElementById("down").addEventListener('click', function(){
+				mui.ajax('http://115.28.74.83/pycrawl/admin.php?op=down', {
+					data: {
+						'id': selfpage.dataid
+					},
+					dataType: 'json',
+					type: 'POST',
+					timeout: 10000,
+					success: function(){
+						plus.ui.toast('删除成功！！');
+						plus.webview.getWebviewById('admin').reload();
+					},
+					error: function(){
+						plus.ui.toast('删除失败！！');
+					}
+				})
+			})
+			
+			link.addEventListener('click', function(){
+				plus.runtime.openURL( selfpage.url );
+			});
+		})
+    </script>
+</head>
+<body>
+	
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">网站详情</h1>
+	</header>
+	<div class="mui-content">
+		<ul class="mui-table-view">
+			<li class="mui-table-view-cell">
+					<div class="mui-media-body">
+						网站名称
+						<p class='mui-ellipsis' id="name"></p>
+					</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell">
+					<div class="mui-media-body">
+						网址
+						<p class='mui-ellipsis' id="url"></p>
+					</div>
+				</a>
+			</li>
+			<li class="mui-table-view-cell">
+					<div class="mui-media-body" id="status">
+						
+					</div>
+				</a>
+			</li>
+		</ul>
+		<div style="margin-top: 14px;" align="center" id="opor">
+			<button type="button" class="mui-btn" id="link">点我打开此网站</button>
+			<button type="button" class="mui-btn" id="down">点我删除此网站</button>
+			<button type="button" class="mui-btn" id="up">点我添加此网站</button>
+		</div>
+	</div>
+</body>
+</html>

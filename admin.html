@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	
+//    	<li class="mui-table-view-cell">
+//					<a class="mui-navigate-right">
+//						
+//					</a>
+//				</li>
+
+		mui.plusReady(function(){
+			
+			
+			mui.ajax('http://115.28.74.83/pycrawl/admin.php?op=get', {
+				dataType: 'json',
+				type: 'POST',
+				timeout: 10000,
+				success: function(data){
+					
+					var urllist = document.getElementById("urllist");
+					var finallist = '';
+					var datacopy = [];
+					var j = data.length-1;
+					for (var i = data.length-1; i>=0; i--) {
+						if(data[i].status==1){
+							datacopy.push(data[i])
+						}else{
+							finallist = finallist+'<li data-id="'+j+'" class="mui-table-view-cell"><a class="mui-navigate-right"><div class="mui-media-body">'+data[i].name+'<p class="mui-ellipsis">'+data[i].url+'</p></div>	</a></li>';
+							j--;
+						}
+					}
+					for (var i = datacopy.length-1; i>=0; i--, j--) {
+						finallist = finallist+'<li data-id="'+j+'" class="mui-table-view-cell"><a class="mui-navigate-right" style="color: red;"><div class="mui-media-body">'+data[i].name+'<p class="mui-ellipsis">'+data[i].url+'</p></div> </a></li>';
+					}
+					urllist.innerHTML = finallist;
+					
+					mui('#urllist').on('tap', 'li', function(){
+						mui.openWindow({
+							url: 'url.html',
+							id: 'url',
+							extras: {
+								dataid: data[this.getAttribute('data-id')]._id,
+								url: data[this.getAttribute('data-id')].url,
+								name: data[this.getAttribute('data-id')].name,
+								status: data[this.getAttribute('data-id')].status,
+							}
+						})
+					})
+				},
+				error: function(){
+					plus.ui.toast('finallist');
+				}
+			})
+		})
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">数据</h1>
+	</header>
+	<div class="mui-content">
+		<div class="mui-card">
+			<ul class="mui-table-view" id="urllist">
+				
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

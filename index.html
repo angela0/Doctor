@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	
+		mui.plusReady(function(){
+			var first = null;
+            plus.key.addEventListener('backbutton', function() {
+                //首次按键，提示‘再按一次退出应用’
+                if (!first) {
+                    first = new Date().getTime();
+                    mui.toast('再按一次退出应用');
+                    setTimeout(function() {
+                        first = null;
+                    }, 1000);
+                } else {
+                    if (new Date().getTime() - first < 1000) {
+                        plus.runtime.quit();
+                    }
+                }
+            }, false);
+            
+			
+            mui.ajax('http://115.28.74.83/pycrawl/index.php', {
+            	data: {
+            		'con': 'article'
+            	},
+      			dataType: 'json',
+      			type: 'GET',
+      			timeout: 10000,
+      			success: function(data){
+      				plus.storage.setItem('tmp_article', data);
+      				var list = document.getElementById("list");
+      				var finallist = '';
+      				for (var i = data.length-1; i>=0; i--) {
+						finallist = finallist+'<li data-id="'+i+'" class="mui-table-view-cell"><a class="mui-navigate-right"><div class="mui-media-body">'+data[i].title+'<p class="mui-ellipsis">'+data[i].description+'</p></div>	</a></li>';
+					}
+					list.innerHTML = finallist;
+					mui('#list').on('tap', 'li', function(){
+						mui.openWindow({
+							url: 'detail.html',
+							id: 'detail',
+							extras: {
+								did: data[this.getAttribute('data-id')]._id,
+								title: data[this.getAttribute('data-id')].title,
+								description: data[this.getAttribute('data-id')].description,
+								keywords: data[this.getAttribute('data-id')].keywords,
+								text: data[this.getAttribute('data-id')].text,
+							}
+						})
+					})
+      			},
+      			error: function(){
+      				plus.ui.toast('whatsssssssssss?');
+      			}
+      		})
+            
+            mui('#pop').on('tap', 'li#poplogin', function(){
+            	mui.openWindow({
+            		url: 'login.html',
+            		id: 'login'
+            	})
+            	
+            })
+            mui('#pop').on('tap', 'li#popreg', function(){
+            	mui.openWindow({
+            		url: 'reg.html',
+            		id: 'reg'
+            	})
+            })
+            mui('#pop').on('tap', 'li#popadmin', function(){
+            	mui.openWindow({
+            		url: 'admin.html',
+            		id: 'admin'
+            	})
+            })
+            mui('#pop').on('tap', 'li#popfirst', function(){
+            	plus.webview.currentWebview().reload();
+            })
+            mui('#pop').on('tap', 'li#popdisease', function(){
+            	mui.openWindow({
+            		url: 'disease.html',
+            		id: 'disease'
+            	})
+            })
+		})
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<h1 class="mui-title">TopNews</h1>
+		<!--<a href="#popover" class="mui-icon mui-icon-bars" id="bars">-->
+		<a href="#popover" class="mui-icon mui-icon-bars"></a>
+	</header>
+	<div class="mui-content" id="main">
+		<ul class="mui-table-view" id="list">
+
+		</ul>
+	</div>
+	
+	
+	<div id="popover" class="mui-popover mui-popover-bottom mui-popover-action ">
+	  <ul class="mui-table-view" id="pop">
+	    <li class="mui-table-view-cell" id="poplogin"><a href="#">登录</a></li>
+	    <li class="mui-table-view-cell" id="popreg"><a href="#">注册</a></li>
+	    <li class="mui-table-view-cell" id="popfirst"><a href="#">首页</a></li>
+	    <li class="mui-table-view-cell" id="popdisease"><a href="#">查疾</a></li>
+	    <li class="mui-table-view-cell" id="popadmin"><a href="#">数据</a></li>
+	  </ul>
+
+	</div>
+	
+</div>
+</body>
+</html>

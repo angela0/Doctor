@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <title></title>
+    <script src="js/mui.min.js"></script>
+    <link href="css/mui.min.css" rel="stylesheet"/>
+    <script type="text/javascript" charset="utf-8">
+      	mui.init();
+      	mui.plusReady(function(){
+      		var curpage = plus.webview.currentWebview();
+      		var title = document.getElementById("headertitle");
+      		if(curpage.name==1)
+      			title.innerHTML = '急救常识';
+      		else
+      			title.innerHTML = curpage.name
+      			
+      		mui.ajax('http://115.28.74.83/pycrawl/disease.php', {
+      			data: {
+      				'con': 'disease',
+      				'name': curpage.name
+      			},
+      			dataType: 'json',
+      			type: 'GET',
+      			timeout: 10000,
+      			success: function(data){
+      				var finallist = '';
+      				var urllist = document.getElementById("urllist");
+      				for (var i=data.length-1; i>=0; i--) {
+      					finallist = finallist+'<li class="mui-table-view-cell" data-id="'+i+'"><a class="mui-navigate-right"><div class="mui-media-body">'+data[i].title+'</div><p class="mui-ellipsis">'+data[i].description+'</p></a></li>';
+      				}
+      				
+      				urllist.innerHTML = finallist;
+      				
+      				mui('.mui-table-view').on('tap', 'li', function(){
+						mui.openWindow({
+							url: 'killme.html',
+							id: 'killme',
+							extras: {
+								title: data[this.getAttribute('data-id')].title,
+								sign: data[this.getAttribute('data-id')].sign,
+								dsummary: data[this.getAttribute('data-id')].dsummary,
+								shows: data[this.getAttribute('data-id')].show,
+								pc: data[this.getAttribute('data-id')].pc
+							}
+						})
+					})
+      			},
+      			error: function(){
+      				plus.ui.toast('what?????');
+      			}
+      		})
+      	})
+    </script>
+</head>
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title" id="headertitle"></h1>
+	</header>
+	
+	<div class="mui-content">
+		<div class="mui-card">
+			<ul class="mui-table-view" id="urllist">
+				
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

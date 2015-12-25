@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<script src="js/mui.min.js"></script>
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<script type="text/javascript" charset="utf-8">
+			mui.init();
+
+			function fillpart() {
+				var mc = document.getElementById("main-content");
+				mui.ajax('http://115.28.74.83/pycrawl/disease.php', {
+					data: {
+						'con': 'dbody',
+						'class': 'body'
+					},
+					dataType: 'json',
+					type: 'GET',
+					timeout: 10000,
+					success: function(data) {
+						var finallist = '';
+						for (var i = data.length - 1; i >= 0; i--) {
+							var inner = '';
+							for (var j = data[i].subpart.length - 1; j >= 0; j--) {
+								inner = inner + '<ul class="mui-table-view my"><li class="mui-table-view-cell" mdata-id="' + i + '" data-id="' + j + '"><a class="mui-navigate-right">' + data[i].subpart[j].name + '</a></li></ul>';
+							}
+							finallist = finallist + '<ul class="mui-table-view" ><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">' + data[i].name +
+								'</a><div class="mui-collapse-content">' + inner + '</div></li></ul>';
+						}
+						mc.innerHTML = finallist;
+						mui('.my').on('tap', 'li', function() {
+							mui.openWindow({
+								url: 'diseaselist.html',
+								id: 'diseaselist1',
+								extras: {
+									'part': data[this.getAttribute('mdata-id')].subpart[this.getAttribute('data-id')].part,
+									'name': data[this.getAttribute('mdata-id')].subpart[this.getAttribute('data-id')].name
+								}
+							})
+						})
+					},
+					error: function() {
+						plus.ui.toast('网络错误了吧...');
+					}
+				})
+			}
+
+			function filldepart() {
+				var mc = document.getElementById("main-content");
+				mui.ajax('http://115.28.74.83/pycrawl/disease.php', {
+					data: {
+						'con': 'department',
+						'class': 'body'
+					},
+					dataType: 'json',
+					type: 'GET',
+					timeout: 10000,
+					success: function(data) {
+						var finallist = '';
+						for (var i = data.length - 1; i >= 0; i--) {
+							var inner = '';
+							for (var j = data[i].subdepart.length - 1; j >= 0; j--) {
+								inner = inner + '<ul class="mui-table-view my"><li class="mui-table-view-cell" mdata-id="' + i + '" data-id="' + j + '"><a class="mui-navigate-right">' + data[i].subdepart[j].name + '</a></li></ul>';
+							}
+							finallist = finallist + '<ul class="mui-table-view" ><li class="mui-table-view-cell mui-collapse"><a class="mui-navigate-right" href="#">' + data[i].name +
+								'</a><div class="mui-collapse-content">' + inner + '</div></li></ul>';
+						}
+						mc.innerHTML = finallist;
+						mui('.my').on('tap', 'li', function() {
+							mui.openWindow({
+								url: 'diseaselist.html',
+								id: 'diseaselist2',
+								extras: {
+									'part': data[this.getAttribute('mdata-id')].subdepart[this.getAttribute('data-id')].depart,
+									'name': data[this.getAttribute('mdata-id')].subdepart[this.getAttribute('data-id')].name
+								}
+							})
+						})
+					},
+					error: function() {
+						plus.ui.toast('网络错误了吧...');
+					}
+				})
+			}
+
+			function fillnormal() {
+				mui.openWindow({
+					url: 'diseaselist.html',
+					id: 'diseaselist3',
+					extras: {
+						'part': '',
+						'name': '1'
+					}
+				})
+			}
+			mui.plusReady(function() {
+				fillpart();
+				mui('#pop').on('tap', 'li#poppart', function() {
+					fillpart();
+				})
+				mui('#pop').on('tap', 'li#popdepart', function() {
+					filldepart();
+				})
+				mui('#pop').on('tap', 'li#popnormal', function() {
+					fillnormal();
+				})
+			});
+		</script>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">疾病库</h1>
+			<a href="#popover" class="mui-icon mui-icon-bars mui-pull-right"></a>
+		</header>
+		<div class="mui-content" id="main-content">
+
+		</div>
+		<div id="popover" class="mui-popover mui-popover-bottom mui-popover-action ">
+			<ul class="mui-table-view" id="pop">
+				<li class="mui-table-view-cell" id="poppart"><a href="#">按部位</a></li>
+				<li class="mui-table-view-cell" id="popdepart"><a href="#">按科室</a></li>
+				<li class="mui-table-view-cell" id="popnormal"><a href="#">急救常识</a></li>
+			</ul>
+
+		</div>
+	</body>
+
+</html>
